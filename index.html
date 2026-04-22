@@ -398,6 +398,50 @@
 
   .btn-submit:hover { background: #D80070; transform: translateY(-1px); }
 
+  .btn-pdf {
+    background: var(--white);
+    color: var(--black);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    margin-left: 14px;
+  }
+
+  .btn-pdf:hover { border-color: var(--black); color: var(--black); }
+
+  .btn-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+
+  /* ── PRINT / PDF STYLES ─────────── */
+  @media print {
+    .color-bar, footer, .btn-row, .collab-notice .notice-head { }
+    body { background: white; font-size: 12px; }
+    .page-wrap { padding: 0 20px; }
+    .collab-notice { background: #111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .form-section { border: 1px solid #ccc; page-break-inside: avoid; margin-top: 16px; padding: 20px; }
+    .btn-row { display: none !important; }
+    .submit-section { display: none !important; }
+    header { padding: 20px 0 16px; }
+    .phase-grid { grid-template-columns: 1fr 1fr; }
+    .field-grid { grid-template-columns: 1fr 1fr; }
+    input, select, textarea {
+      border: 1px solid #bbb !important;
+      background: white !important;
+      -webkit-print-color-adjust: exact;
+    }
+    .chip { border: 1px solid #bbb; padding: 5px 10px; font-size: 11px; }
+    .chip:has(input:checked) { background: #ffe8f4 !important; border-color: #FF1F8E !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .phase-card:has(input:checked) { background: #ffe8f4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    a[href]::after { content: none !important; }
+    .color-bar { background: linear-gradient(90deg, #FF1F8E 0%, #FF6B00 33%, #C8D400 66%, #00B5B8 100%) !important; height: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
   /* ── SUCCESS ───────────────────── */
   #success-wrap {
     display: none;
@@ -1012,7 +1056,11 @@
     <div class="submit-section">
       <h3>One more step after this.</h3>
       <p>Once you submit, you will get a link to the document portal. Upload your firm's documents there at least five days before our strategy session. The intake tells me about your firm. The documents let me actually prepare for it. Both matter.</p>
-      <button type="submit" class="btn-submit">Submit Intake Form</button>
+      <p style="font-size:12px; color:var(--muted); margin-top:-14px; margin-bottom:20px;">Want a copy for your records? Use the Save PDF button before you submit.</p>
+      <div class="btn-row">
+        <button type="submit" class="btn-submit">Submit Intake Form</button>
+        <button type="button" class="btn-pdf" onclick="window.print()">&#8595; Save PDF Copy</button>
+      </div>
     </div>
 
   </form>
