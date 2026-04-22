@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Legal Authority Lab — Custom Build Intake</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pink:    #FF1F8E;
+    --orange:  #FF6B00;
+    --lime:    #C8D400;
+    --teal:    #00B5B8;
+    --black:   #0A0A0A;
+    --white:   #FFFFFF;
+    --offwhite:#F7F5F0;
+    --light:   #F2F2F2;
+    --border:  #DEDEDE;
+    --muted:   #888888;
+    --body:    #333333;
+    --label:   #555555;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--offwhite);
+    color: var(--body);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ── COLOR BAR ─────────────────── */
+  .color-bar {
+    height: 6px;
+    background: linear-gradient(90deg, var(--pink) 0%, var(--orange) 33%, var(--lime) 66%, var(--teal) 100%);
+  }
+
+  /* ── WRAPPER ───────────────────── */
+  .page-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  /* ── HEADER ────────────────────── */
+  header {
+    padding: 52px 0 44px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .lal-mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 16px;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--pink);
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.7;
+  }
+
+  /* ── COLLABORATION NOTICE ──────── */
+  .collab-notice {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin: 36px 0 0;
+  }
+
+  .collab-notice .notice-head {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 10px;
+  }
+
+  .collab-notice h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .collab-notice p {
+    font-size: 14px;
+    color: #AAAAAA;
+    line-height: 1.75;
+  }
+
+  .collab-notice p + p {
+    margin-top: 10px;
+  }
+
+  .collab-notice strong {
+    color: var(--white);
+    font-weight: 700;
+  }
+
+  /* ── FORM SECTIONS ─────────────── */
+  .form-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 36px 40px;
+    margin-top: 28px;
+  }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--black);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .section-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.65;
+    max-width: 600px;
+  }
+
+  /* ── GUIDED PROMPT ─────────────── */
+  .guided-prompt {
+    background: var(--offwhite);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.65;
+  }
+
+  .guided-prompt strong {
+    color: var(--black);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ── FIELDS ────────────────────── */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .field-grid.full { grid-template-columns: 1fr; }
+
+  .field-group { display: flex; flex-direction: column; gap: 7px; }
+  .field-group.span-2 { grid-column: 1 / -1; }
+
+  label.field-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--label);
+  }
+
+  label.field-label .req { color: var(--pink); margin-left: 2px; }
+
+  .field-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: -4px;
+    line-height: 1.5;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.18s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--pink);
+    background: #fffbfd;
+  }
+
+  input::placeholder, textarea::placeholder { color: #C0C0C0; }
+
+  textarea { resize: vertical; min-height: 108px; }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+  }
+
+  /* ── CHECK / RADIO CHIPS ──────── */
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    font-size: 13px;
+    color: var(--label);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    user-select: none;
+    line-height: 1.2;
+  }
+
+  .chip:hover { border-color: #AAAAAA; color: var(--black); }
+
+  .chip input[type="checkbox"],
+  .chip input[type="radio"] {
+    width: 13px; height: 13px;
+    accent-color: var(--pink);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .chip:has(input[type="checkbox"]:checked),
+  .chip:has(input[type="radio"]:checked) {
+    border-color: var(--pink);
+    color: var(--black);
+    background: #FFF0F6;
+    font-weight: 600;
+  }
+
+  /* orange variant for budget */
+  .chip.orange:has(input:checked) {
+    border-color: var(--orange);
+    background: #FFF5EE;
+  }
+
+  /* teal for concerns */
+  .chip.teal:has(input:checked) {
+    border-color: var(--teal);
+    background: #F0FAFA;
+    color: var(--black);
+  }
+
+  /* ── PHASE CARDS ───────────────── */
+  .phase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .phase-card {
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .phase-card input[type="checkbox"] {
+    margin-top: 3px;
+    width: 14px; height: 14px;
+    accent-color: var(--pink);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .phase-card:has(input:checked) {
+    border-color: var(--pink);
+    background: #FFF0F6;
+  }
+
+  .phase-card .pc-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.3;
+  }
+
+  .phase-card .pc-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+
+  /* full-width "all in" card */
+  .phase-card.all-in {
+    grid-column: 1 / -1;
+    border-color: var(--orange);
+    background: #FFFAF6;
+  }
+
+  .phase-card.all-in:has(input:checked) {
+    border-color: var(--orange);
+    background: #FFF3E8;
+  }
+
+  .phase-card.all-in .pc-title { color: var(--orange); }
+
+  /* ── DIVIDER LINE ──────────────── */
+  .field-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── SUBMIT ────────────────────── */
+  .submit-section {
+    margin-top: 28px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 36px 40px;
+  }
+
+  .submit-section h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--black);
+    margin-bottom: 8px;
+  }
+
+  .submit-section p {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    max-width: 540px;
+    line-height: 1.65;
+  }
+
+  .btn-submit {
+    background: var(--pink);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 16px 44px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-submit:hover { background: #D80070; transform: translateY(-1px); }
+
+  /* ── SUCCESS ───────────────────── */
+  #success-wrap {
+    display: none;
+    text-align: center;
+    padding: 80px 32px;
+  }
+
+  #success-wrap h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--black);
+    margin-bottom: 14px;
+  }
+
+  #success-wrap p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ────────────────────── */
+  footer {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 28px 32px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .footer-text a { color: var(--pink); text-decoration: none; }
+
+  /* ── RESPONSIVE ────────────────── */
+  @media (max-width: 620px) {
+    .page-wrap, footer { padding-left: 20px; padding-right: 20px; }
+    .form-section { padding: 24px 20px 28px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .phase-grid { grid-template-columns: 1fr; }
+    .phase-card.all-in { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="color-bar"></div>
+
+<div class="page-wrap">
+
+  <header>
+    <p class="lal-mono">Legal Authority Lab &nbsp;·&nbsp; Custom Build</p>
+    <h1>Let's Build<br><em>Your System.</em></h1>
+    <p class="header-sub">
+      Fill this out before your strategy session. There are no wrong answers. If a question doesn't apply, skip it. If you don't know, say so — that is useful information too.
+    </p>
+
+    <!-- COLLABORATION NOTICE -->
+    <div class="collab-notice">
+      <p class="notice-head">Before You Start — Read This</p>
+      <h2>A custom build is a collaboration. Not a hand-off.</h2>
+      <p>
+        This is not a situation where you hire me, disappear for three months, and I show up with finished bots. That does not work.
+        The bots we build are built around <strong>your firm, your voice, your processes, and your documents.</strong>
+        That means you have real involvement throughout — gathering materials, sitting with me on Zoom to review what a bot is doing,
+        recording a training so I can hear how you explain something to your staff, telling me when something is off.
+      </p>
+      <p>
+        I lead the build. I tell you exactly what I need and when. But <strong>you will have homework.</strong>
+        The firms that get the best results are the ones that show up to that homework. Come into this knowing that, and we will build something genuinely useful.
+      </p>
+    </div>
+  </header>
+
+  <form id="intake-form" novalidate>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 1 — ABOUT YOU                     -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">01</p>
+      <h2 class="section-title">About You &amp; Your Firm</h2>
+      <p class="section-desc">Start with the basics.</p>
+
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label" for="first_name">First Name <span class="req">*</span></label>
+          <input type="text" id="first_name" name="first_name" placeholder="Jane" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="last_name">Last Name <span class="req">*</span></label>
+          <input type="text" id="last_name" name="last_name" placeholder="Smith" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="firm_name">Firm Name <span class="req">*</span></label>
+          <input type="text" id="firm_name" name="firm_name" placeholder="Smith Law Group" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="email">Email Address <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="jane@smithlaw.com" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="website">Firm Website</label>
+          <input type="text" id="website" name="website" placeholder="smithlaw.com" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="states">State(s) Where You Practice <span class="req">*</span></label>
+          <input type="text" id="states" name="states" placeholder="e.g. California, Nevada" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="years_practice">Years in Practice</label>
+          <select id="years_practice" name="years_practice">
+            <option value="" disabled selected>Select</option>
+            <option>Under 3 years</option>
+            <option>3–7 years</option>
+            <option>8–15 years</option>
+            <option>15+ years</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="num_attorneys">Number of Attorneys (including you)</label>
+          <select id="num_attorneys" name="num_attorneys">
+            <option value="" disabled selected>Select</option>
+            <option>Just me</option>
+            <option>2</option>
+            <option>3–5</option>
+            <option>6–10</option>
+            <option>11+</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="num_staff">Number of Staff (paralegals, admins, etc.)</label>
+          <select id="num_staff" name="num_staff">
+            <option value="" disabled selected>Select</option>
+            <option>None — just attorneys</option>
+            <option>1–2</option>
+            <option>3–5</option>
+            <option>6–10</option>
+            <option>11+</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 2 — YOUR PRACTICE                 -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">02</p>
+      <h2 class="section-title">What You Practice</h2>
+      <p class="section-desc">Check everything that applies. If you do a little of something, check it — it matters for scoping the build.</p>
+
+      <div class="field-group">
+        <label class="field-label">Practice Areas <span class="req">*</span></label>
+        <div class="chip-group">
+          <label class="chip"><input type="checkbox" name="practice" value="Labor & Employment — Plaintiff" /> Labor &amp; Employment — Plaintiff</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Labor & Employment — Defense" /> Labor &amp; Employment — Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Workers Compensation — Plaintiff" /> Workers' Comp — Plaintiff</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Workers Compensation — Defense" /> Workers' Comp — Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Personal Injury — Plaintiff" /> Personal Injury — Plaintiff</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Personal Injury — Defense" /> Personal Injury — Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Family Law / Divorce" /> Family Law / Divorce</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Criminal Defense" /> Criminal Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Criminal — Prosecution" /> Criminal — Prosecution</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Business Litigation" /> Business / Commercial Litigation</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Contract / Transactional" /> Contract / Transactional</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Real Estate" /> Real Estate</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Real Estate Litigation" /> Real Estate Litigation</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Bankruptcy" /> Bankruptcy</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Immigration" /> Immigration</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Estate Planning / Probate" /> Estate Planning / Probate</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Medical Malpractice — Plaintiff" /> Medical Malpractice — Plaintiff</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Medical Malpractice — Defense" /> Medical Malpractice — Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Insurance Defense" /> Insurance Defense</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Civil Rights" /> Civil Rights</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Class Action" /> Class Action</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Construction Law" /> Construction Law</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Intellectual Property" /> Intellectual Property</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Environmental Law" /> Environmental</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Administrative / Regulatory" /> Administrative / Regulatory</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Tax Law" /> Tax Law</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Healthcare Law" /> Healthcare Law</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Entertainment Law" /> Entertainment Law</label>
+          <label class="chip"><input type="checkbox" name="practice" value="HOA / Community Association" /> HOA / Community Association</label>
+          <label class="chip"><input type="checkbox" name="practice" value="Other" /> Other</label>
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">How Would You Describe Your Practice Focus? <span class="req">*</span></label>
+        <p class="field-hint">Pick the one that best describes how most of your cases resolve.</p>
+        <div class="chip-group" style="margin-top:8px;">
+          <label class="chip"><input type="radio" name="practice_focus" value="Heavy Litigation" /> Heavy litigation — most cases go to trial or at least to the courthouse door</label>
+          <label class="chip"><input type="radio" name="practice_focus" value="Settlement-Focused" /> Settlement-focused — most cases resolve before trial</label>
+          <label class="chip"><input type="radio" name="practice_focus" value="Transactional" /> Transactional — contracts, deals, documents — not courtroom</label>
+          <label class="chip"><input type="radio" name="practice_focus" value="Mixed" /> Mixed — depends on the case type</label>
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label class="field-label" for="other_practice_notes">Anything Else About Your Practice Worth Knowing?</label>
+        <p class="field-hint">Niche specialties, unusual case types, multi-state work, volume vs. high-value cases — anything that makes your practice different from the generic version of your practice area.</p>
+        <textarea id="other_practice_notes" name="other_practice_notes" style="min-height:90px;" placeholder="Optional — but often the most useful thing I read."></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 3 — YOUR TECH STACK               -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">03</p>
+      <h2 class="section-title">Your Technology Stack</h2>
+      <p class="section-desc">I need to know what systems you are already running before I build anything. The bots have to work with what you have.</p>
+
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label" for="cms">Case Management System <span class="req">*</span></label>
+          <select id="cms" name="cms" required>
+            <option value="" disabled selected>Select one</option>
+            <option>MyCase</option>
+            <option>Clio</option>
+            <option>Smokeball</option>
+            <option>Filevine</option>
+            <option>Practice Panther</option>
+            <option>Litify</option>
+            <option>Needles / Neos</option>
+            <option>CASEpeer</option>
+            <option>Tabs3 / PracticeMaster</option>
+            <option>AbacusLaw</option>
+            <option>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cms_ai">Does Your CMS Include AI Features?</label>
+          <select id="cms_ai" name="cms_ai">
+            <option value="" disabled selected>Select one</option>
+            <option>Yes — and I use them</option>
+            <option>Yes — but I don't use them</option>
+            <option>Not sure</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="doc_storage">Where Do You Store Your Files? <span class="req">*</span></label>
+          <select id="doc_storage" name="doc_storage" required>
+            <option value="" disabled selected>Select one</option>
+            <option>SharePoint / Microsoft 365</option>
+            <option>Google Drive / Google Workspace</option>
+            <option>Internal server</option>
+            <option>Dropbox</option>
+            <option>Box</option>
+            <option>NetDocuments</option>
+            <option>iManage</option>
+            <option>Within CMS only</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="esign">E-Signature Platform</label>
+          <select id="esign" name="esign">
+            <option value="" disabled selected>Select one</option>
+            <option>Adobe Sign</option>
+            <option>DocuSign</option>
+            <option>Dropbox Sign (HelloSign)</option>
+            <option>PandaDoc</option>
+            <option>Built into my CMS</option>
+            <option>None</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="phone_system">Phone System</label>
+          <input type="text" id="phone_system" name="phone_system" placeholder="VXT, RingCentral, standard landline, cell only…" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="call_recording">Do You Record Calls?</label>
+          <select id="call_recording" name="call_recording">
+            <option value="" disabled selected>Select one</option>
+            <option>Yes — and transcripts are generated automatically</option>
+            <option>Yes — recording only, no automatic transcript</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="billing_platform">Billing / Invoicing</label>
+          <input type="text" id="billing_platform" name="billing_platform" placeholder="Built into CMS, QuickBooks, LawPay, other…" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="email_platform">Email Platform</label>
+          <select id="email_platform" name="email_platform">
+            <option value="" disabled selected>Select one</option>
+            <option>Microsoft Outlook / Microsoft 365</option>
+            <option>Google Workspace / Gmail</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 4 — HOW YOU WORK TODAY            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">04</p>
+      <h2 class="section-title">How You Work Today</h2>
+      <p class="section-desc">
+        Most people cannot answer the question "what are your pain points?" — and that is fine. So I am not going to ask you that.
+        Instead, walk me through what actually happens in your firm. Answer what you know and skip what you don't.
+        Real details are more useful than polished answers.
+      </p>
+
+      <div class="guided-prompt">
+        <strong>From the first call to the signed retainer —</strong>
+        When a potential new client contacts your firm, who answers? What do they ask? Where does that information go? How does the client end up with a signed agreement, and how long does the whole process usually take?
+      </div>
+      <div class="field-group" style="margin-bottom:24px;">
+        <label class="field-label" for="lead_flow">Lead to Retainer — Walk Me Through It</label>
+        <textarea id="lead_flow" name="lead_flow" style="min-height:120px;" placeholder="Be as specific as you can. If parts are messy or inconsistent, say so — that is the most useful thing I can hear."></textarea>
+      </div>
+
+      <div class="guided-prompt">
+        <strong>Once a client is hired —</strong>
+        Pick a case that is open on your desk right now. What does your staff do on that file this week? How do they know what needs to be done? Where do documents live? What's the most time-consuming task that does not actually require a law degree to do?
+      </div>
+      <div class="field-group" style="margin-bottom:24px;">
+        <label class="field-label" for="active_case_flow">Active Case Workflow — Walk Me Through It</label>
+        <textarea id="active_case_flow" name="active_case_flow" style="min-height:120px;" placeholder="What does a normal week look like on a file? What's manual, repetitive, or slow?"></textarea>
+      </div>
+
+      <div class="guided-prompt">
+        <strong>The one that keeps coming back —</strong>
+        What task does your staff do over and over again that could theoretically be done the same way every single time? What do they have to look up, copy, or recreate that they have already done a hundred times before?
+      </div>
+      <div class="field-group" style="margin-bottom:24px;">
+        <label class="field-label" for="repeat_task">The Most Repeated Task in Your Firm</label>
+        <textarea id="repeat_task" name="repeat_task" style="min-height:100px;" placeholder="Doesn't have to be dramatic. Even something small — if it happens on every case, it matters."></textarea>
+      </div>
+
+      <div class="guided-prompt">
+        <strong>What falls through the cracks —</strong>
+        What is the thing that gets dropped, delayed, or forgotten most often? Not the dramatic failures — the quiet ones. The follow-up that did not happen. The document that got filed late. The client who waited too long to hear back.
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="gaps">What Gets Dropped or Delayed in Your Firm</label>
+        <textarea id="gaps" name="gaps" style="min-height:100px;" placeholder="If nothing comes to mind, that's fine — some firms are tighter than others. But most have at least one."></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 5 — WHERE YOU ARE WITH AI         -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">05</p>
+      <h2 class="section-title">Where You Are With AI</h2>
+      <p class="section-desc">No judgment here. Whether you have never opened ChatGPT or you have been building bots for a year — I need to know where you actually are.</p>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label">Are You Currently Using AI in Your Practice? <span class="req">*</span></label>
+        <div class="chip-group" style="margin-top:6px;">
+          <label class="chip"><input type="radio" name="ai_using" value="Yes regularly" /> Yes — regularly</label>
+          <label class="chip"><input type="radio" name="ai_using" value="Sometimes" /> Sometimes — haven't made it a habit yet</label>
+          <label class="chip"><input type="radio" name="ai_using" value="Just started" /> Just started exploring</label>
+          <label class="chip"><input type="radio" name="ai_using" value="No" /> No — not yet</label>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label">Which AI Platform(s) Are You Using?</label>
+        <div class="chip-group" style="margin-top:6px;">
+          <label class="chip"><input type="checkbox" name="ai_platform" value="Claude Pro" /> Claude Pro</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="Claude Teams" /> Claude Teams</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="ChatGPT Plus" /> ChatGPT Plus</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="Microsoft Copilot Pro" /> Microsoft Copilot Pro</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="Free tier only" /> Free tier only</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="None" /> Not using AI yet</label>
+          <label class="chip"><input type="checkbox" name="ai_platform" value="Other" /> Other</label>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label">How Are You Using AI Right Now — In Plain Terms? <span class="req">*</span></label>
+        <p class="field-hint">Pick the description that most honestly matches what you are actually doing.</p>
+        <div class="chip-group" style="margin-top:8px;">
+          <label class="chip"><input type="radio" name="ai_sophistication" value="Just asking questions" /> I type questions into it like a search engine — it gives me answers</label>
+          <label class="chip"><input type="radio" name="ai_sophistication" value="Drafting help" /> I paste in documents and ask it to draft or edit things for me</label>
+          <label class="chip"><input type="radio" name="ai_sophistication" value="Basic setup" /> I have uploaded some templates or examples and it uses those when I ask</label>
+          <label class="chip"><input type="radio" name="ai_sophistication" value="Projects and custom setup" /> I have set up custom workspaces, projects, or configured it with instructions specific to my firm</label>
+          <label class="chip"><input type="radio" name="ai_sophistication" value="Built bots / advanced" /> I have built bots, skills, or custom AI workflows — I know what I am doing</label>
+          <label class="chip"><input type="radio" name="ai_sophistication" value="None" /> I have not used it yet</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="ai_notes">What Is Working? What Is Not?</label>
+        <p class="field-hint">Even just one sentence each. If you have not used AI yet, tell me what has stopped you.</p>
+        <textarea id="ai_notes" name="ai_notes" style="min-height:100px;" placeholder="What impresses you about AI right now / what frustrates you / what made you book this call?"></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 6 — CONCERNS ABOUT AI             -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">06</p>
+      <h2 class="section-title">Your Concerns About AI</h2>
+      <p class="section-desc">Every attorney has concerns. I would rather know yours now than find out halfway through a build that something is a dealbreaker. Check everything that is on your mind.</p>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label">What Are Your Biggest Concerns? (Check all that apply)</label>
+        <div class="chip-group" style="margin-top:8px;">
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Client confidentiality" /> Client confidentiality — where does the data go?</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Bar ethics compliance" /> Bar ethics compliance — am I allowed to use this?</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="AI accuracy" /> Accuracy — what if the AI gets it wrong?</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Staff adoption" /> Staff adoption — my team won't use it</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Learning curve" /> Learning curve — I don't have time to learn a new system</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Cost" /> Cost — I need to see ROI before I spend money on this</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Overdependence" /> Overdependence — what if we rely on it too much?</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Job displacement" /> Staff worry their jobs are at risk</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Client perception" /> Client perception — what will clients think?</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Malpractice exposure" /> Malpractice exposure from AI errors</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Hallucinations" /> AI making up citations or facts</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="Not sure where to start" /> I don't even know what I would use it for</label>
+          <label class="chip teal"><input type="checkbox" name="concerns" value="None" /> I don't have concerns — I'm ready to go</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="concerns_other">Anything Else on Your Mind About AI?</label>
+        <textarea id="concerns_other" name="concerns_other" style="min-height:90px;" placeholder="Open field — if something above doesn't capture it, put it here."></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 7 — WHERE DO YOU WANT TO START    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">07</p>
+      <h2 class="section-title">Where Do You Want to Start?</h2>
+      <p class="section-desc">
+        We build in phases — each phase produces a working set of bots before moving to the next.
+        Check everything you are interested in. Then tell me where you want to start. If you want everything, say so.
+      </p>
+
+      <label class="field-label" style="margin-bottom:12px; display:block;">Which Bot Suites Interest You? (Check all that apply)</label>
+
+      <div class="phase-grid">
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Lead Intake & Screening" />
+          <div>
+            <div class="pc-title">Lead Intake &amp; Screening</div>
+            <div class="pc-desc">Automate the first call — screen leads, capture information, qualify cases, route to attorney or retainer.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Client Onboarding" />
+          <div>
+            <div class="pc-title">Client Onboarding</div>
+            <div class="pc-desc">Retainer generation, intake forms, welcome materials, client education, case setup.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Pleadings & Drafting" />
+          <div>
+            <div class="pc-title">Pleadings &amp; Drafting</div>
+            <div class="pc-desc">Petitions, motions, responses, standard documents — drafted in your voice from your templates.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Discovery" />
+          <div>
+            <div class="pc-title">Discovery</div>
+            <div class="pc-desc">Discovery tracking, requests (interrogatories, RFPs, RFAs), deficiency letters, gap analysis.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Mediation & Settlement" />
+          <div>
+            <div class="pc-title">Mediation &amp; Settlement</div>
+            <div class="pc-desc">Demand letters, mediation statements, position summaries, settlement analysis, negotiation strategy.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Trial & Hearing Prep" />
+          <div>
+            <div class="pc-title">Trial &amp; Hearing Prep</div>
+            <div class="pc-desc">Witness prep, exhibit organization, opening and closing frameworks, cross-examination, trial binder.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Research" />
+          <div>
+            <div class="pc-title">Legal Research</div>
+            <div class="pc-desc">Custom research bot loaded with your jurisdiction, practice-specific statutes, caselaw, and procedural rules.</div>
+          </div>
+        </label>
+        <label class="phase-card">
+          <input type="checkbox" name="phase" value="Marketing & Content" />
+          <div>
+            <div class="pc-title">Marketing &amp; Content</div>
+            <div class="pc-desc">Blog posts, social media, email campaigns, SEO — all in your voice, built on a custom brand kit.</div>
+          </div>
+        </label>
+
+        <!-- ALL IN CARD -->
+        <label class="phase-card all-in">
+          <input type="checkbox" name="phase" value="I want it all — full build" />
+          <div>
+            <div class="pc-title">I want it all and I want it now.</div>
+            <div class="pc-desc">Full firm build — every phase, start to finish. We scope it together and roll it out in stages so you have working bots throughout. This is the most efficient path for firms that are ready to commit.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="field-group" style="margin-top:22px;">
+        <label class="field-label" for="start_phase">If You Had to Pick One Phase to Start With, Which Would It Be?</label>
+        <p class="field-hint">Even if you checked everything above, tell me what is most urgent right now.</p>
+        <textarea id="start_phase" name="start_phase" style="min-height:80px;" placeholder="If you have no idea, write that — I will tell you what will give you the fastest ROI based on what you told me above."></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 8 — GOALS & INVESTMENT            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">08</p>
+      <h2 class="section-title">Goals &amp; Investment</h2>
+      <p class="section-desc">The goal is not AI for the sake of AI. The goal is a firm that runs better. Tell me what better looks like for you.</p>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label" for="success_vision">What Does Your Firm Look Like in 6 Months If This Works?</label>
+        <p class="field-hint">Be concrete if you can — hours saved, tasks eliminated, staff capacity freed up, revenue impact. If you have no idea, that is fine too.</p>
+        <textarea id="success_vision" name="success_vision" style="min-height:110px;" placeholder="What changes? What gets better? What stops being a problem?"></textarea>
+      </div>
+
+      <div class="field-group" style="margin-bottom:22px;">
+        <label class="field-label">Estimated Investment Range</label>
+        <p class="field-hint">Optional — no judgment either way. It just helps me build a roadmap that fits your reality.</p>
+        <div class="chip-group" style="margin-top:8px;">
+          <label class="chip orange"><input type="radio" name="budget" value="Under $3,000" /> Under $3,000</label>
+          <label class="chip orange"><input type="radio" name="budget" value="$3,000–$6,000" /> $3,000–$6,000</label>
+          <label class="chip orange"><input type="radio" name="budget" value="$6,000–$10,000" /> $6,000–$10,000</label>
+          <label class="chip orange"><input type="radio" name="budget" value="$10,000–$15,000" /> $10,000–$15,000</label>
+          <label class="chip orange"><input type="radio" name="budget" value="$15,000+" /> $15,000+</label>
+          <label class="chip orange"><input type="radio" name="budget" value="Not sure" /> Not sure yet</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="timeline">Is There a Timeline Driving This?</label>
+        <p class="field-hint">A new hire coming, a trial season starting, a firm merger, a deadline you are working toward — anything that affects the pace.</p>
+        <textarea id="timeline" name="timeline" style="min-height:80px;" placeholder="Optional — but useful if there is a reason you need something by a certain date."></textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SECTION 9 — ANYTHING ELSE                 -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="form-section">
+      <p class="section-eyebrow">09</p>
+      <h2 class="section-title">Anything Else</h2>
+
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label" for="how_heard">How Did You Find Legal Authority Lab?</label>
+          <select id="how_heard" name="how_heard">
+            <option value="" disabled selected>Select one</option>
+            <option>Facebook — Boss Lady Esq.</option>
+            <option>Facebook — FL Family Law Network</option>
+            <option>Facebook — other group</option>
+            <option>LinkedIn</option>
+            <option>Instagram</option>
+            <option>Referral from a colleague</option>
+            <option>Email / newsletter</option>
+            <option>Podcast or webinar</option>
+            <option>Bar association</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="referral_name">Referred By (Name, if applicable)</label>
+          <input type="text" id="referral_name" name="referral_name" placeholder="Leave blank if not applicable" />
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label" for="open_field">Anything Else You Want Me to Know Before Our Call?</label>
+          <textarea id="open_field" name="open_field" style="min-height:110px;" placeholder="Open field — context, questions, concerns, anything at all that didn't fit somewhere above."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SUBMIT                                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="submit-section">
+      <h3>One more step after this.</h3>
+      <p>Once you submit, you will get a link to the document portal. Upload your firm's documents there at least five days before our strategy session. The intake tells me about your firm. The documents let me actually prepare for it. Both matter.</p>
+      <button type="submit" class="btn-submit">Submit Intake Form</button>
+    </div>
+
+  </form>
+
+  <div id="success-wrap">
+    <div style="max-width:560px; margin:0 auto; text-align:center; padding:72px 24px 80px;">
+      <p style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#888; margin-bottom:16px;">Step 1 of 2 — Complete</p>
+      <h2 style="font-family:'DM Serif Display',serif; font-size:38px; color:#0A0A0A; margin-bottom:14px; line-height:1.1;">Intake received.</h2>
+      <p style="font-size:15px; color:#555; line-height:1.75; margin-bottom:36px;">Now for step two. Upload your firm's documents to the portal below. I need everything at least <strong style="color:#0A0A0A;">five days before our strategy session</strong> — that is what gives me time to actually review what you send and show up prepared instead of starting from scratch on the call.</p>
+
+      <a href="https://pipefile.com/lead_form/ee74a41661944d6eb5d6e01c403e226b"
+         target="_blank"
+         style="display:inline-block; background:#FF1F8E; color:#fff; font-family:'Syne',sans-serif;
+                font-size:14px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase;
+                padding:18px 44px; border-radius:4px; text-decoration:none; margin-bottom:28px;">
+        Upload Your Documents &rarr;
+      </a>
+
+      <div style="background:#F7F5F0; border:1.5px solid #DEDEDE; border-left:4px solid #00B5B8; border-radius:4px; padding:20px 24px; text-align:left; margin-bottom:0;">
+        <p style="font-size:13px; color:#333; line-height:1.75; margin-bottom:0;">
+          Read the portal instructions before you start uploading. Skip any section that does not apply to the bots we are building. Use the notes fields — they matter.
+          <strong style="color:#0A0A0A;"> The more you give me, the more specific and useful your strategy session will be.</strong>
+          A firm that uploads ten documents walks away with a detailed build plan. A firm that uploads nothing walks away with a conversation.
+        </p>
+      </div>
+
+      <p style="font-size:12px; color:#888; margin-top:20px; line-height:1.6;">You will also receive this portal link by email. If you have questions before our session, reply to that email.</p>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <span class="footer-text">Legal Authority Lab &nbsp;·&nbsp; <a href="https://legalauthoritylab.com">legalauthoritylab.com</a> &nbsp;·&nbsp; A subsidiary of Family Matters Law Group, P.A.</span>
+  <span class="footer-text">Confidential &nbsp;·&nbsp; FL Bar No. 64399</span>
+</footer>
+
+<div class="color-bar"></div>
+
+<script>
+document.getElementById('intake-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  document.getElementById('intake-form').style.display = 'none';
+  document.getElementById('success-wrap').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
